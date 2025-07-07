@@ -54,7 +54,7 @@ A feature-rich, modern todo application built with React and Redux Toolkit. This
 
 1. Clone the repository
    ```bash
-   git clone https://github.com/sarthakg043/redux-todoapp
+   git clone https://github.com/sarthakg043/task-tracker-rygneco
    cd redux-todoapp
    ```
 
