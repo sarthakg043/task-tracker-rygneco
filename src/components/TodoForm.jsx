@@ -172,12 +172,12 @@ const TodoForm = () => {
                         }
                     </div>
                 ) : (
-                    <>
+                    <div className="max-h-[450px] overflow-y-auto pr-2 space-y-2">
                         {/* Todo List */}
                         {filteredTodos.map((todo) => (
                             <Todo key={todo.id} todo={todo} />
                         ))}
-                    </>
+                    </div>
                 )}
             </div>
         </div>
