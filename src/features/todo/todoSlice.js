@@ -18,20 +18,22 @@ export const todoSlice = createSlice({
                 title: action.payload.title,
                 description: action.payload.description,
                 targetDate: action.payload.targetDate,
+                priority: action.payload.priority || null, // high, medium, low, or null
                 isCompleted: false
             }
             state.todos.push(todo)
             localStorage.setItem('todos', JSON.stringify(state.todos))
         },
         updateTodo:(state, action) => {
-            // accepts an object with id, title, description, targetDate
+            // accepts an object with id, title, description, targetDate, priority
             // remember to pass date as string by String(targetDate)
             state.todos = state.todos.map((todo) => (
                 todo.id === action.payload.id ? {
                     ...todo,
                     title: action.payload.title,
                     description: action.payload.description,
-                    targetDate: action.payload.targetDate
+                    targetDate: action.payload.targetDate,
+                    priority: action.payload.priority
                 } : todo
             ))
             localStorage.setItem('todos', JSON.stringify(state.todos))

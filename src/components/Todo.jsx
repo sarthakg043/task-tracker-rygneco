@@ -3,6 +3,27 @@ import { DatePickerWithPresets } from './DatePickerWithPresets'
 import { Button } from './ui/button'
 import { useDispatch } from 'react-redux'
 import { updateTodo, removeTodo, toggleComplete } from '@/features/todo/todoSlice'
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select"
+
+// Helper function to get priority flag
+const getPriorityFlag = (priority) => {
+  switch (priority) {
+    case 'high':
+      return '🔴'
+    case 'medium':
+      return '🟡'
+    case 'low':
+      return '🔵'
+    default:
+      return null
+  }
+}
 
 const Todo = ({todo}) => {
 
@@ -12,6 +33,7 @@ const Todo = ({todo}) => {
   const [todoTitle, setTodoTitle] = useState(todo.title)
   const [todoDescription, setTodoDescription] = useState(todo.description)
   const [todoTargetDate, setTodoTargetDate] = useState(todo.targetDate ? new Date(todo.targetDate) : null)
+  const [todoPriority, setTodoPriority] = useState(todo.priority || null)
 
   const editTodo = () => {
     if(!todoTitle) return;
@@ -21,7 +43,8 @@ const Todo = ({todo}) => {
         id: todo.id,
         title: todoTitle,
         description: todoDescription,
-        targetDate: todoTargetDate ? todoTargetDate.toISOString() : null
+        targetDate: todoTargetDate ? todoTargetDate.toISOString() : null,
+        priority: todoPriority
       }
     }))
     setIsTodoEditable(false);
@@ -41,18 +64,25 @@ const Todo = ({todo}) => {
       <div
         className='w-full flex justify-between m-0'
       >
-        <input 
-          className={`w-4/5 px-4 text-sm lg:text-base font-normal bg-transparent focus:outline-none transition ease-in-out border-b
-            ${ isTodoEditable ? "border-black/20 px-2 dark:border-white/50 dark:text-white" : "border-transparent cursor-default"} ${todo.isCompleted ? "line-through" : ""}`} 
-          type='text'
-          value={todoTitle}
-          onChange={(e) => setTodoTitle(e.target.value)}
-          placeholder='Title'
-          readOnly={!isTodoEditable}
-          maxLength={50}
-          name='title'
-          required
-        />
+        <div className='flex items-center w-4/5'>
+          {getPriorityFlag(todoPriority) && (
+            <span className='text-lg mr-2 flex-shrink-0'>
+              {getPriorityFlag(todoPriority)}
+            </span>
+          )}
+          <input 
+            className={`flex-1 px-4 text-sm lg:text-base font-normal bg-transparent focus:outline-none transition ease-in-out border-b
+              ${ isTodoEditable ? "border-black/20 px-2 dark:border-white/50 dark:text-white" : "border-transparent cursor-default"} ${todo.isCompleted ? "line-through" : ""}`} 
+            type='text'
+            value={todoTitle}
+            onChange={(e) => setTodoTitle(e.target.value)}
+            placeholder='Title'
+            readOnly={!isTodoEditable}
+            maxLength={50}
+            name='title'
+            required
+          />
+        </div>
         <div
           className='w-1/5 flex justify-end items-center px-2 dark:text-white text-sm'
         >
@@ -82,7 +112,7 @@ const Todo = ({todo}) => {
         />
         ) : null}
       </div>
-      <div className='flex flex-wrap justify-between'>
+      <div className='flex flex-wrap justify-between gap-2'>
         <div className="w-full sm:w-auto">
           {isTodoEditable || todoTargetDate ? (
             <DatePickerWithPresets 
@@ -92,6 +122,26 @@ const Todo = ({todo}) => {
               onStateChange={(date) => setTodoTargetDate(date)} 
               classNames={` outline-none border-none ${isTodoEditable ? "dark:text-white" : "bg-transparent hover:bg-transparent dark:hover:text-inherit"}`}
             />
+          ): null}
+        </div>
+        
+        <div className="w-full sm:w-auto">
+          {isTodoEditable ? (
+            <Select 
+              value={todoPriority || "none"} 
+              onValueChange={(value) => setTodoPriority(value === "none" ? null : value)}
+              disabled={!isTodoEditable}
+            >
+              <SelectTrigger className={`w-full sm:w-32 ${!isTodoEditable ? "bg-transparent border-none shadow-none hover:bg-transparent" : ""}`}>
+                <SelectValue placeholder="Priority" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="none">No Priority</SelectItem>
+                <SelectItem value="high">🚩 High</SelectItem>
+                <SelectItem value="medium">🟡 Medium</SelectItem>
+                <SelectItem value="low">🔵 Low</SelectItem>
+              </SelectContent>
+            </Select>
           ): null}
         </div>
         

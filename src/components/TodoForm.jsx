@@ -16,6 +16,7 @@ const TodoForm = () => {
     const [title, setTitle] = useState('')
     const [description, setDescription] = useState('')
     const [targetDate, setTargetDate] = useState(null)
+    const [priority, setPriority] = useState(null)
     const [filter, setFilter] = useState('all')
 
     const dispatch = useDispatch()
@@ -23,15 +24,25 @@ const TodoForm = () => {
 
     // Filter todos based on selected filter
     const filteredTodos = useMemo(() => {
+        let filtered = []
         switch (filter) {
             case 'completed':
-                return todos.filter(todo => todo.isCompleted)
+                filtered = todos.filter(todo => todo.isCompleted)
+                break
             case 'pending':
-                return todos.filter(todo => !todo.isCompleted)
+                filtered = todos.filter(todo => !todo.isCompleted)
+                break
             case 'all':
             default:
-                return todos
+                filtered = todos
         }
+        
+        // Sort by priority (high > medium > low > no priority)
+        // Create a copy of the array before sorting to avoid mutating Redux state
+        return [...filtered].sort((a, b) => {
+            const priorityOrder = { 'high': 0, 'medium': 1, 'low': 2, null: 3, undefined: 3 }
+            return priorityOrder[a.priority] - priorityOrder[b.priority]
+        })
     }, [todos, filter])
 
     // Calculate task statistics
@@ -48,10 +59,12 @@ const TodoForm = () => {
             title,
             description,
             targetDate: targetDate ? targetDate.toISOString() : null,
+            priority,
         }))
         setTitle('')
         setDescription('')
         setTargetDate(null)
+        setPriority(null)
     }
 
     const handleDateChange = (date) => {
@@ -84,11 +97,24 @@ const TodoForm = () => {
                     placeholder='Add description...'
                     maxLength={225}
                 />
-                <div className='flex flex-wrap justify-between pt-3'>
+                <div className='flex flex-wrap justify-between pt-3 gap-2'>
                     <div className="w-full sm:w-auto">
                         <DatePickerWithPresets label={"Pick a target Date"} onStateChange={handleDateChange} value={targetDate}/>
                     </div>
-                    <div className='w-full max-w-32 sm:w-1/5 pt-3 sm:pt-0 mx-3'>
+                    <div className="w-full sm:w-auto">
+                        <Select value={priority || "none"} onValueChange={(value) => setPriority(value === "none" ? null : value)}>
+                            <SelectTrigger className="w-full sm:w-32">
+                                <SelectValue placeholder="Priority" />
+                            </SelectTrigger>
+                            <SelectContent>
+                                <SelectItem value="none">No Priority</SelectItem>
+                                <SelectItem value="high">🚩 High</SelectItem>
+                                <SelectItem value="medium">🟡 Medium</SelectItem>
+                                <SelectItem value="low">🔵 Low</SelectItem>
+                            </SelectContent>
+                        </Select>
+                    </div>
+                    <div className='w-full max-w-32 sm:w-1/5 pt-3 sm:pt-0'>
                         <Button
                             type='submit'
                             className='w-full h-10 dark:outline-cyan-500 outline text-white font-bold rounded-lg bg-blue-500 dark:bg-transparent dark:text-cyan-500 dark:hover:bg-cyan-500 dark:hover:text-white'
