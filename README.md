@@ -19,7 +19,7 @@ A feature-rich, modern todo application built with React and Redux Toolkit. This
 - Mobile-responsive design
 
 ### 🏷️ Priority System
-- Three priority levels: High (🚩), Medium (🟡), Low (🔵)
+- Three priority levels: High (🔴), Medium (🟡), Low (🔵)
 - Visual priority indicators with colored flags
 - Smart sorting by priority (high to low)
 - Optional priority setting
@@ -55,7 +55,7 @@ A feature-rich, modern todo application built with React and Redux Toolkit. This
 1. Clone the repository
    ```bash
    git clone https://github.com/sarthakg043/task-tracker-rygneco
-   cd redux-todoapp
+   cd task-tracker-rygneco
    ```
 
 2. Install dependencies
@@ -86,6 +86,17 @@ A feature-rich, modern todo application built with React and Redux Toolkit. This
 - **React Day Picker** - Date selection component
 - **Class Variance Authority** - CSS class management
 - **Clsx** - Conditional class names utility
+
+## 🔗 Live Demo
+[task-tracker-rygneco.vercel.app](https://task-tracker-rygneco.vercel.app)
+
+## Screenshots
+
+- **Light Mode**
+![Light Mode](./screenshots/light_mode.png?raw=true)
+
+- **Dark Mode**
+![Dark Mode](./screenshots/dark_mode.png?raw=true)
 
 ## 🎯 Key Highlights
 
