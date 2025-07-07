@@ -1,17 +1,46 @@
-import React, { useState } from 'react'
+import React, { useState, useMemo } from 'react'
 import { Button } from './ui/button'
 import { DatePickerWithPresets } from './DatePickerWithPresets'
 import Todo from './Todo'
 import { useDispatch, useSelector } from 'react-redux'
 import { addTodo } from '@/features/todo/todoSlice'
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select"
 
 const TodoForm = () => {
     const [title, setTitle] = useState('')
     const [description, setDescription] = useState('')
     const [targetDate, setTargetDate] = useState(null)
+    const [filter, setFilter] = useState('all')
 
     const dispatch = useDispatch()
     const todos = useSelector(state => state.todo.todos)
+
+    // Filter todos based on selected filter
+    const filteredTodos = useMemo(() => {
+        switch (filter) {
+            case 'completed':
+                return todos.filter(todo => todo.isCompleted)
+            case 'pending':
+                return todos.filter(todo => !todo.isCompleted)
+            case 'all':
+            default:
+                return todos
+        }
+    }, [todos, filter])
+
+    // Calculate task statistics
+    const taskStats = useMemo(() => {
+        const total = todos.length
+        const completed = todos.filter(todo => todo.isCompleted).length
+        const pending = total - completed
+        return { total, completed, pending }
+    }, [todos])
 
     const handleSubmit = (e) => {
         e.preventDefault()
@@ -70,11 +99,47 @@ const TodoForm = () => {
                 </div>
             </form>
             <div className='w-full'>
-                <br />
-                {/* Todo List */}
-                {todos.map((todo) => (
-                    <Todo key={todo.id} todo={todo} />
-                ))}
+                <div className='flex justify-between items-center my-4'>
+                    <div>
+                        <h3 className='text-lg font-semibold text-gray-800 dark:text-white'>
+                            Your Tasks ({filteredTodos.length})
+                        </h3>
+                        <p className='text-sm text-gray-600 dark:text-gray-400'>
+                            Total: {taskStats.total} | Completed: {taskStats.completed} | Pending: {taskStats.pending}
+                        </p>
+                    </div>
+                    <div className='flex items-center space-x-2'>
+                        <span className='text-sm text-gray-600 dark:text-gray-400'>Filter:</span>
+                        <Select value={filter} onValueChange={setFilter}>
+                            <SelectTrigger className="w-32">
+                                <SelectValue placeholder="Filter" />
+                            </SelectTrigger>
+                            <SelectContent>
+                                <SelectItem value="all">All Tasks</SelectItem>
+                                <SelectItem value="pending">Pending</SelectItem>
+                                <SelectItem value="completed">Completed</SelectItem>
+                            </SelectContent>
+                        </Select>
+                    </div>
+                </div>
+                
+                {filteredTodos.length === 0 ? (
+                    <div className='text-center py-8 text-gray-500 dark:text-gray-400'>
+                        {filter === 'all' 
+                            ? 'No tasks yet. Add your first task above!' 
+                            : filter === 'completed' 
+                                ? 'No completed tasks yet.' 
+                                : 'No pending tasks. Great job!'
+                        }
+                    </div>
+                ) : (
+                    <>
+                        {/* Todo List */}
+                        {filteredTodos.map((todo) => (
+                            <Todo key={todo.id} todo={todo} />
+                        ))}
+                    </>
+                )}
             </div>
         </div>
     </div>
