@@ -261,8 +261,8 @@ const TodoForm = () => {
                             }
                         </div>
                     ) : (
-                        // Scrollable todo list container (max-height: 650px)
-                        <div className="max-h-[650px] overflow-y-auto pr-2 space-y-2">
+                        // Scrollable todo list container (max-height: 450px) for desktop and mobile
+                        <div className="max-h-[450px] overflow-y-auto pr-2 space-y-2">
                             {/* Todo List */}
                             {filteredTodos.map((todo) => (
                                 <Todo key={todo.id} todo={todo} />
