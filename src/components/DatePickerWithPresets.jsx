@@ -23,10 +23,36 @@ import {
 export function DatePickerWithPresets({label, onStateChange, value, isEditable = true, classNames=""}) {
   const [date, setDate] = React.useState(value || null)
 
+  // Update local state when value prop changes
+  React.useEffect(() => {
+    setDate(value || null)
+  }, [value])
+
   const handleChange = (date) => {
     const val = addDays(new Date(), parseInt(date))
     setDate(val)
     onStateChange(val)
+  }
+
+  // Helper function to safely format date
+  const formatDate = (dateToFormat) => {
+    if (!dateToFormat) return null
+    try {
+      // Handle string dates
+      if (typeof dateToFormat === 'string') {
+        const parsedDate = new Date(dateToFormat)
+        if (isNaN(parsedDate.getTime())) return null
+        return format(parsedDate, "PPP")
+      }
+      // Handle Date objects
+      if (dateToFormat instanceof Date && !isNaN(dateToFormat.getTime())) {
+        return format(dateToFormat, "PPP")
+      }
+      return null
+    } catch (error) {
+      console.warn('Error formatting date:', error)
+      return null
+    }
   }
 
   return (
@@ -40,7 +66,7 @@ export function DatePickerWithPresets({label, onStateChange, value, isEditable =
           )}
         >
           <CalendarIcon className="mr-2 h-4 w-4" />
-          {date ? format(date, "PPP") : <span>{label}</span>}
+          {date ? (formatDate(date) || <span>{label}</span>) : <span>{label}</span>}
         </Button>
       </PopoverTrigger>
       <PopoverContent className="flex w-auto flex-col space-y-2 p-2">

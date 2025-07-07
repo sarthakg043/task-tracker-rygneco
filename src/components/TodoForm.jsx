@@ -8,7 +8,7 @@ import { addTodo } from '@/features/todo/todoSlice'
 const TodoForm = () => {
     const [title, setTitle] = useState('')
     const [description, setDescription] = useState('')
-    const [targetDate, setTargetDate] = useState('')
+    const [targetDate, setTargetDate] = useState(null)
 
     const dispatch = useDispatch()
     const todos = useSelector(state => state.todo.todos)
@@ -18,11 +18,11 @@ const TodoForm = () => {
         dispatch(addTodo({
             title,
             description,
-            targetDate: String(targetDate),
+            targetDate: targetDate ? targetDate.toISOString() : null,
         }))
         setTitle('')
         setDescription('')
-        setTargetDate()
+        setTargetDate(null)
     }
 
     const handleDateChange = (date) => {

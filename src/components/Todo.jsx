@@ -11,7 +11,7 @@ const Todo = ({todo}) => {
   const [isTodoEditable, setIsTodoEditable] = useState(false)
   const [todoTitle, setTodoTitle] = useState(todo.title)
   const [todoDescription, setTodoDescription] = useState(todo.description)
-  const [todoTargetDate, setTodoTargetDate] = useState(todo.targetDate)
+  const [todoTargetDate, setTodoTargetDate] = useState(todo.targetDate ? new Date(todo.targetDate) : null)
 
   const editTodo = () => {
     if(!todoTitle) return;
@@ -21,7 +21,7 @@ const Todo = ({todo}) => {
         id: todo.id,
         title: todoTitle,
         description: todoDescription,
-        targetDate: todoTargetDate
+        targetDate: todoTargetDate ? todoTargetDate.toISOString() : null
       }
     }))
     setIsTodoEditable(false);
