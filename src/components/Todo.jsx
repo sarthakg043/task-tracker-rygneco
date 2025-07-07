@@ -1,7 +1,8 @@
 import { useEffect, useState } from 'react'
 import { DatePickerWithPresets } from './DatePickerWithPresets'
 import { Button } from './ui/button'
-import { useDispatch } from 'react-redux'
+import TagInput from './TagInput'
+import { useDispatch, useSelector } from 'react-redux'
 import { updateTodo, removeTodo, toggleComplete } from '@/features/todo/todoSlice'
 import {
   Select,
@@ -29,11 +30,13 @@ const Todo = ({todo}) => {
 
   // const {updateTodo, toggleComplete, removeTodo} = useTodoContext()
   const dispatch = useDispatch()
+  const availableTags = useSelector(state => state.todo.availableTags)
   const [isTodoEditable, setIsTodoEditable] = useState(false)
   const [todoTitle, setTodoTitle] = useState(todo.title)
   const [todoDescription, setTodoDescription] = useState(todo.description)
   const [todoTargetDate, setTodoTargetDate] = useState(todo.targetDate ? new Date(todo.targetDate) : null)
   const [todoPriority, setTodoPriority] = useState(todo.priority || null)
+  const [todoTags, setTodoTags] = useState(todo.tags || [])
 
   const editTodo = () => {
     if(!todoTitle) return;
@@ -44,7 +47,8 @@ const Todo = ({todo}) => {
         title: todoTitle,
         description: todoDescription,
         targetDate: todoTargetDate ? todoTargetDate.toISOString() : null,
-        priority: todoPriority
+        priority: todoPriority,
+        tags: todoTags
       }
     }))
     setIsTodoEditable(false);
@@ -96,6 +100,20 @@ const Todo = ({todo}) => {
           /> 
         </div>
       </div>
+      
+      {/* Tags display */}
+      {(todoTags.length > 0 || isTodoEditable) && (
+        <div className="px-4 py-2 w-full">
+          <TagInput
+            tags={todoTags}
+            onTagsChange={setTodoTags}
+            availableTags={availableTags}
+            isEditable={isTodoEditable}
+            placeholder="Add tags..."
+          />
+        </div>
+      )}
+      
       <div className='m-0 w-4/5'>
         {isTodoEditable || todoDescription ? (
         <input 

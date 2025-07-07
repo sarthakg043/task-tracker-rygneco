@@ -2,6 +2,7 @@ import React, { useState, useMemo } from 'react'
 import { Button } from './ui/button'
 import { DatePickerWithPresets } from './DatePickerWithPresets'
 import Todo from './Todo'
+import TagInput from './TagInput'
 import { useDispatch, useSelector } from 'react-redux'
 import { addTodo } from '@/features/todo/todoSlice'
 import {
@@ -17,10 +18,12 @@ const TodoForm = () => {
     const [description, setDescription] = useState('')
     const [targetDate, setTargetDate] = useState(null)
     const [priority, setPriority] = useState(null)
+    const [tags, setTags] = useState([])
     const [filter, setFilter] = useState('all')
 
     const dispatch = useDispatch()
     const todos = useSelector(state => state.todo.todos)
+    const availableTags = useSelector(state => state.todo.availableTags)
 
     // Filter todos based on selected filter
     const filteredTodos = useMemo(() => {
@@ -60,11 +63,13 @@ const TodoForm = () => {
             description,
             targetDate: targetDate ? targetDate.toISOString() : null,
             priority,
+            tags,
         }))
         setTitle('')
         setDescription('')
         setTargetDate(null)
         setPriority(null)
+        setTags([])
     }
 
     const handleDateChange = (date) => {
@@ -97,6 +102,14 @@ const TodoForm = () => {
                     placeholder='Add description...'
                     maxLength={225}
                 />
+                <div className="pt-2">
+                    <TagInput
+                        tags={tags}
+                        onTagsChange={setTags}
+                        availableTags={availableTags}
+                        placeholder="Add tags (press Enter or comma to add)..."
+                    />
+                </div>
                 <div className='flex flex-wrap justify-between pt-3 gap-2'>
                     <div className="w-full sm:w-auto">
                         <DatePickerWithPresets label={"Pick a target Date"} onStateChange={handleDateChange} value={targetDate}/>
